@@ -1,0 +1,423 @@
+openapi: 3.1.0
+info:
+  title: Bootleg-Ebay
+  version: '1.0'
+  summary: This API is for a platform for selling and buying used items.
+  description: ''
+servers:
+  - url: 'http://localhost:3000'
+paths:
+  /login:
+    post:
+      summary: Login
+      operationId: post-login
+      responses:
+        '200':
+          description: OK
+        '401':
+          description: Unauthorized
+      description: Endpoint is used to login with username and password
+      security:
+        - HTTPBasic: []
+  /users:
+    post:
+      summary: Create New User
+      operationId: post-user
+      description: Create a new user.
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  userId:
+                    type: number
+                    description: Unique id of the created user
+              examples:
+                example-1:
+                  value:
+                    userId: 53180913508
+        '400':
+          description: Request has missing or malformed information
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDescription'
+              examples:
+                example-1:
+                  value:
+                    errorDescription: Missing email field
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                firstname:
+                  type: string
+                surname:
+                  type: string
+                dateofbirth:
+                  type: string
+                  description: ISO 8601
+                address:
+                  type: string
+                country:
+                  type: string
+                  description: |
+                    ISO 3166
+                email:
+                  type: string
+                password:
+                  type: string
+              required:
+                - username
+                - firstname
+                - surname
+                - dateofbirth
+                - address
+                - country
+                - email
+                - password
+            examples:
+              example-1:
+                value:
+                  username: L4uR1
+                  firstname: Lauri
+                  surname: Luuranko
+                  dateofbirth: '2021-05-05'
+                  address: Luukatu 4
+                  country: FI
+                  email: Lauri.Luuranko@suomi24.fi
+                  password: K4ls1uM
+    parameters: []
+  '/users/{userId}':
+    parameters:
+      - schema:
+          type: number
+        name: userId
+        in: path
+        required: true
+        description: Unique id of the user to be deleted
+    delete:
+      summary: Delete a specific user
+      operationId: delete-users-userId
+      responses:
+        '200':
+          description: OK
+        '401':
+          description: Unauthorized
+        '404':
+          description: userId not found
+      description: This operation will delete a user
+      security:
+        - HTTPBasic: []
+    get:
+      summary: Get information on a specific user
+      operationId: get-users-userId
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserInfo'
+        '401':
+          description: Unauthorized
+        '404':
+          description: Not Found
+      security:
+        - HTTPBasic: []
+    put:
+      summary: Modify user
+      operationId: put-users-userId
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDescription'
+        '401':
+          description: Unauthorized
+        '404':
+          description: Not Found
+      description: Modify user
+      security:
+        - HTTPBasic: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserInfo'
+  /posts:
+    get:
+      summary: Get information on all sensors
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Post'
+      operationId: get-posts
+    post:
+      summary: Create a new post
+      operationId: post-posts
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  postId:
+                    type: number
+              examples:
+                example-1:
+                  value:
+                    sensorId: 15387
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDescription'
+        '401':
+          description: Unauthorized
+      description: Create a new post
+      security:
+        - HTTPBasic: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Post'
+  '/posts/{postId}':
+    parameters:
+      - schema:
+          type: string
+        name: postId
+        in: path
+        required: true
+    get:
+      summary: Get information on a specific post
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Post'
+        '404':
+          description: Not Found
+      operationId: get-posts-postId
+      description: Get information on a specific post
+    delete:
+      summary: Delete a specific post
+      operationId: delete-posts-postId
+      responses:
+        '200':
+          description: OK
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDescription'
+        '404':
+          description: Not Found
+      security:
+        - HTTPBasic: []
+      description: Delete a specific post
+    put:
+      summary: Modify a specific post
+      operationId: put-posts-postId
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDescription'
+        '401':
+          description: Unauthorized
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDescription'
+      security:
+        - HTTPBasic: []
+      description: Modify a specific post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Post'
+  /posts/search:
+    get:
+      summary: Your GET endpoint
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Post'
+      operationId: get-posts-search
+      parameters:
+        - schema:
+            type: string
+          in: query
+          name: category
+        - schema:
+            type: string
+          in: query
+          name: location
+        - schema:
+            type: string
+          in: query
+          name: dateofposting
+components:
+  schemas:
+    UserInfo:
+      title: UserInfo
+      type: object
+      description: ''
+      examples:
+        - id: 5319593
+          username: L4uR1
+          firstname: Lauri
+          surname: Luuranko
+          dateofbirth: '2021-05-05'
+          address: Luukatu 4
+          country: FI
+          email: Lauri.Luuranko@suomi24.fi
+          password: K4ls1uM
+      properties:
+        id:
+          type: number
+          description: Unique identifier for the given user.
+        username:
+          type: string
+        firstname:
+          type: string
+        surname:
+          type: string
+        dateofbirth:
+          type: string
+          description: ISO 8601
+        address:
+          type: string
+        country:
+          type: string
+          description: ISO 3166
+        email:
+          type: string
+      required:
+        - id
+        - username
+        - firstname
+        - surname
+        - dateofbirth
+        - address
+        - country
+        - email
+    ErrorDescription:
+      title: ErrorDescription
+      type: object
+      properties:
+        ErrorDescription:
+          type: string
+      examples:
+        - ErrorDescription: string
+    Post:
+      title: Post
+      type: object
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        category:
+          type: object
+          properties:
+            cars:
+              type: boolean
+            clothing:
+              type: boolean
+            hobbies:
+              type: boolean
+            electronics:
+              type: boolean
+            furniture:
+              type: boolean
+            other:
+              type: boolean
+        location:
+          type: object
+          properties:
+            city:
+              type: string
+            country:
+              type: string
+        images:
+          type: object
+        price:
+          type: number
+        dateofposting:
+          type: string
+        deliverytype:
+          type: object
+          properties:
+            shipping:
+              type: boolean
+            pickup:
+              type: boolean
+        seller:
+          type: string
+        contact:
+          type: string
+      examples:
+        - title: Testi Tuote
+          description: Tämä tuote on testi
+          category:
+            cars: false
+            clothing: false
+            hobbies: false
+            electronics: false
+            furniture: false
+            other: true
+          location:
+            city: Oulu
+            country: FI
+          images: {}
+          price: 399
+          dateofposting: '2021-05-05'
+          deliverytype:
+            shipping: true
+            pickup: false
+          seller: Lauri
+          contact: '+358008135420'
+  securitySchemes:
+    HTTPBasic:
+      type: http
+      scheme: basic
