@@ -144,7 +144,89 @@ app.get('/posts', (req, res) => {
 
 app.post('/posts', passport.authenticate('basic', { session: false }), (req, res) => {
   //this api resource is protected with HTTP Basic Authentication
+
+  const newPost = {
+    postId: uuidv4(),
+    userId: req.user.userId,
+    title: req.body.title,
+    description: req.body.description,
+    category: req.body.category,
+    location: req.body.location,
+    //images
+    price: req.body.price,
+    dateofposting: req.body.dateofposting,
+    deliverytype: req.body.deliverytype,
+    seller: req.body.seller,
+    contact: req.body.contact
+  }
+
+  postDatabase.push(newPost);
+  //res.send(newUser.userId);
+  res.sendStatus(201);
+})
+
+app.get('/posts/:id', (req, res) => {
+  const post = postDatabase.find(p => p.postId === req.params.id)
+    if(post === undefined){
+        res.sendStatus(404);
+    }else{
+      res.json(post);
+    }
+})
+
+app.put('/posts/:id', passport.authenticate('basic', { session: false }), (req, res) => {
+  //this api resource is protected with HTTP Basic Authentication
+
+  //we only show the user if it matches with ours
+  post = postDatabase.find(p => p.postId === req.params.id)
+  if(post === undefined){
+      res.sendStatus(404);
+  }else{
+    if(post.userId === req.user.userId){
+      
+      post.title = req.body.title,
+      post.description = req.body.description,
+      post.price = req.body.price,
+      post.dateofposting = req.body.dateofposting,
+      post.seller = req.body.seller,
+      post.contact = req.body.contact
+
+      res.sendStatus(200);
+    }else{
+      res.sendStatus(401);
+    }
+  }
+  
   //res.send('Authorization successful');
+})
+
+app.delete('/posts/:id', passport.authenticate('basic', { session: false }), (req, res) => {
+  //this api resource is protected with HTTP Basic Authentication
+
+  //we only show the user if it matches with ours
+  
+    const post = postDatabase.find(p => p.postId === req.params.id)
+    if(post === undefined){
+        res.sendStatus(404);
+    }else{
+      if(post.userId === req.user.userId){
+        var index = postDatabase.indexOf(post);
+        postDatabase.splice(index, 1);
+        res.sendStatus(200);
+      }else{
+        res.sendStatus(401);
+      }
+    }
+})
+
+app.get('/search', (req, res) => {
+  //console.log(req.query.category);
+  //const type = postDatabase.find(post => post.category.cars === req.query.category);
+  //console.log(type);
+
+  const posts = postDatabase.filter(post => post.category.cars === true);
+  res.json(posts);
+  //res.sendStatus(200);
 })
 
 app.listen(port, () => {
