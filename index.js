@@ -1,11 +1,13 @@
 const express = require('express')
 const app = express()
-const port = 3000
+//const port = 3000
 
 const passport = require('passport');
 const BasicStrategy = require('passport-http').BasicStrategy;
 
 app.use(express.json())
+
+app.set('port', (process.env.PORT || 80));
 
 const bcrypt = require('bcryptjs');
 
@@ -228,7 +230,11 @@ app.get('/search', (req, res) => {
   res.json(posts);
   //res.sendStatus(200);
 })
-
+/*
 app.listen(port, () => {
   console.log(`Example app listening at http://localhost:${port}`)
+})
+*/
+app.listen(app.get('port'), () => {
+  console.log('Example app listening at', app.get('port'));
 })
