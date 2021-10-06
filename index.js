@@ -58,7 +58,6 @@ app.get('/users/:id', passport.authenticate('basic', { session: false }), (req, 
     res.sendStatus(401)
   }
   
-  //res.send('Authorization successful');
 })
 
 app.put('/users/:id', passport.authenticate('basic', { session: false }), (req, res) => {
@@ -221,15 +220,6 @@ app.delete('/posts/:id', passport.authenticate('basic', { session: false }), (re
     }
 })
 
-app.get('/search', (req, res) => {
-  //console.log(req.query.category);
-  //const type = postDatabase.find(post => post.category.cars === req.query.category);
-  //console.log(type);
-
-  const posts = postDatabase.filter(post => post.category.cars === true);
-  res.json(posts);
-  //res.sendStatus(200);
-})
 /*
 app.listen(port, () => {
   console.log(`Example app listening at http://localhost:${port}`)
